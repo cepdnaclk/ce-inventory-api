@@ -1,0 +1,24 @@
+{
+  "kind": "collectionType",
+  "collectionName": "students",
+  "info": {
+    "name": "Student"
+  },
+  "options": {
+    "increments": true,
+    "timestamps": true
+  },
+  "attributes": {
+    "regNum": {
+      "type": "string"
+    },
+    "batch": {
+      "model": "batch",
+      "via": "students"
+    },
+    "lend_items": {
+      "via": "student",
+      "collection": "lend-items"
+    }
+  }
+}

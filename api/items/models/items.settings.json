@@ -1,0 +1,30 @@
+{
+  "kind": "collectionType",
+  "collectionName": "items",
+  "info": {
+    "name": "items"
+  },
+  "options": {
+    "increments": true,
+    "timestamps": true
+  },
+  "attributes": {
+    "itemName": {
+      "type": "string",
+      "required": true
+    },
+    "category": {
+      "model": "categories",
+      "via": "items"
+    },
+    "availableUnits": {
+      "type": "integer",
+      "required": false,
+      "min": 0
+    },
+    "lend_items": {
+      "via": "item",
+      "collection": "lend-items"
+    }
+  }
+}

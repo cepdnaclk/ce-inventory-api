@@ -1,0 +1,20 @@
+{
+  "kind": "collectionType",
+  "collectionName": "staff",
+  "info": {
+    "name": "Staff"
+  },
+  "options": {
+    "increments": true,
+    "timestamps": true
+  },
+  "attributes": {
+    "Name": {
+      "type": "string"
+    },
+    "approvals": {
+      "via": "approvedBy",
+      "collection": "lend-items"
+    }
+  }
+}

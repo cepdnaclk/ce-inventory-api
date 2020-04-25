@@ -1,0 +1,25 @@
+{
+  "kind": "collectionType",
+  "collectionName": "lend_items",
+  "info": {
+    "name": "lendItems"
+  },
+  "options": {
+    "increments": true,
+    "timestamps": true
+  },
+  "attributes": {
+    "item": {
+      "model": "items",
+      "via": "lend_items"
+    },
+    "student": {
+      "model": "student",
+      "via": "lend_items"
+    },
+    "approvedBy": {
+      "model": "staff",
+      "via": "approvals"
+    }
+  }
+}

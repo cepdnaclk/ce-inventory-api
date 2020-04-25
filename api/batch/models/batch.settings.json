@@ -1,0 +1,25 @@
+{
+  "kind": "collectionType",
+  "collectionName": "batches",
+  "info": {
+    "name": "Batch"
+  },
+  "options": {
+    "increments": true,
+    "timestamps": true
+  },
+  "attributes": {
+    "batchName": {
+      "type": "string",
+      "required": true
+    },
+    "students": {
+      "via": "batch",
+      "collection": "student"
+    },
+    "maxLendItems": {
+      "type": "integer",
+      "min": 0
+    }
+  }
+}

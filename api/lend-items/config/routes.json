@@ -1,0 +1,52 @@
+{
+  "routes": [
+    {
+      "method": "GET",
+      "path": "/lend-items",
+      "handler": "lend-items.find",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/lend-items/count",
+      "handler": "lend-items.count",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/lend-items/:id",
+      "handler": "lend-items.findOne",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/lend-items",
+      "handler": "lend-items.create",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "PUT",
+      "path": "/lend-items/:id",
+      "handler": "lend-items.update",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "DELETE",
+      "path": "/lend-items/:id",
+      "handler": "lend-items.delete",
+      "config": {
+        "policies": []
+      }
+    }
+  ]
+}
