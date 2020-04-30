@@ -17,8 +17,13 @@
       "via": "students"
     },
     "lend_items": {
-      "via": "student",
-      "collection": "lend-items"
+      "collection": "lend-items",
+      "via": "student"
+    },
+    "maxLendItems": {
+      "default": 3,
+      "type": "integer",
+      "min": 0
     }
   }
 }

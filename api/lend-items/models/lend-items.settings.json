@@ -14,8 +14,8 @@
       "via": "lend_items"
     },
     "student": {
-      "model": "student",
-      "via": "lend_items"
+      "via": "lend_items",
+      "model": "student"
     },
     "approvedBy": {
       "model": "staff",

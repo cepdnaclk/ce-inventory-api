@@ -16,10 +16,6 @@
     "students": {
       "via": "batch",
       "collection": "student"
-    },
-    "maxLendItems": {
-      "type": "integer",
-      "min": 0
     }
   }
 }
