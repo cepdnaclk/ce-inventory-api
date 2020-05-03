@@ -101,8 +101,6 @@ module.exports = {
     const contentManagerService = strapi.plugins['content-manager'].services.contentmanager;
 
     const { model } = ctx.params;
-    console.log(ctx.request.body);
-    
     
     try {
       if (ctx.is('multipart')) {
@@ -113,9 +111,20 @@ module.exports = {
         ctx.body = await contentManagerService.create(ctx.request.body, { model });
       }
 
+      // decrement item quantity by one
+      if(model == 'application::lend-items.lend-items'){
+        const id = ctx.body.item.id
+        
+        await contentManagerService.edit({ id }, {
+          availableUnits: ctx.body.item.availableUnits-1
+        }, {
+          model:"application::items.items",
+        });        
+      }
+
       await strapi.telemetry.send('didCreateFirstContentTypeEntry', { model });
     } catch (error) {
-      strapi.log.error(error);
+      strapi.log.error(error);      
       ctx.badRequest(null, [
         {
           messages: [{ id: error.message, message: error.message, field: error.field }],
@@ -136,17 +145,46 @@ module.exports = {
     try {
       if (ctx.is('multipart')) {
         const { data, files } = parseMultipartBody(ctx);
-        ctx.body = await contentManagerService.edit({ id }, data, {
-          files,
-          model,
-        });
+
+        if(model == 'application::lend-items.lend-items'){
+          const entry = await contentManagerService.fetch({ model, id });
+          const prev = await contentManagerService.edit({ id:entry.item.id }, {
+            availableUnits: entry.item.availableUnits+1
+          }, {
+            model:"application::items.items",
+          }); 
+          ctx.body = await contentManagerService.edit({ id }, data, {
+            files,
+            model,
+          });
+          ctx.body = await contentManagerService.edit({ id:ctx.body.item.id }, {
+            availableUnits: ctx.body.item.availableUnits-1
+          }, {
+            model:"application::items.items",
+          }); 
+        }else{
+          ctx.body = await contentManagerService.edit({ id }, data, {
+            files,
+            model,
+          });
+        }
+        
       } else {
         // Return the last one which is the current model.
         ctx.body = await contentManagerService.edit({ id }, ctx.request.body, {
           model,
         });
+
       }
+      
     } catch (error) {
+      //rollback the action
+      // await contentManagerService.edit({ id:prev.item.id }, {
+      //   availableUnits: prev.item.availableUnits-1
+      // }, {
+      //   model:"application::items.items",
+      // });
+
       strapi.log.error(error);
       ctx.badRequest(null, [
         {
@@ -165,6 +203,28 @@ module.exports = {
     const contentManagerService = strapi.plugins['content-manager'].services.contentmanager;
 
     ctx.body = await contentManagerService.delete({ id, model });
+    try {
+       // increment item quantity by one
+       if(model == 'application::lend-items.lend-items'){
+        const id = ctx.body.item.id
+        
+        await contentManagerService.edit({ id }, {
+          availableUnits: ctx.body.item.availableUnits+1
+        }, {
+          model:"application::items.items",
+        }); 
+               
+      }
+    }catch (error) {
+      strapi.log.error(error);
+      ctx.badRequest(null, [
+        {
+          messages: [{ id: error.message, message: error.message, field: error.field }],
+          errors: _.get(error, 'data.errors'),
+        },
+      ]);
+    }
+    
   },
 
   /**
@@ -173,7 +233,37 @@ module.exports = {
   async deleteMany(ctx) {
     const { model } = ctx.params;
     const contentManagerService = strapi.plugins['content-manager'].services.contentmanager;
-
+    
     ctx.body = await contentManagerService.deleteMany({ model }, ctx.request.query);
+    console.log(ctx.body);
+    
+    if(model == 'application::lend-items.lend-items'){
+      try {
+        const itemCount = _.map(ctx.body,'item')
+        const itemUnits = _.uniqBy(itemCount,'id')
+        const uniqItems = _.countBy(itemCount,'id')        
+
+        // increment each item quantity by one
+        for (const idx in uniqItems){
+          const id = parseInt(idx) 
+          const units = _.find(itemUnits,['id',id]).availableUnits
+          
+          await contentManagerService.edit({ id }, {
+            availableUnits: units+uniqItems[idx]
+          }, {
+            model:"application::items.items",
+          });
+        }
+      }catch (error) {
+        strapi.log.error(error);
+        ctx.badRequest(null, [
+          {
+            messages: [{ id: error.message, message: error.message, field: error.field }],
+            errors: _.get(error, 'data.errors'),
+          },
+        ]);
+      }
+    };
+
   },
 };
